@@ -45,6 +45,19 @@ body {
   gap: 0.5rem;
 }
 
+.admin-badge {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
 .admin-btn {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
