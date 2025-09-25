@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { Upload, Save, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Save, X, Youtube } from 'lucide-react';
 import { Video, VideoCategory, CATEGORIES } from '../types/Video';
 import { saveVideo } from '../utils/storage';
-import { saveVideoFile } from '../utils/videoStorage';
+import { extractYouTubeId, isValidYouTubeUrl } from '../utils/youtube';
 
 interface AdminUploadProps {
   onVideoAdded: (video: Video) => void;
@@ -12,47 +12,59 @@ interface AdminUploadProps {
 export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<VideoCategory>(CATEGORIES[0]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [urlError, setUrlError] = useState('');
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('video/')) {
-      setSelectedFile(file);
+  const handleYouTubeUrlChange = (url: string) => {
+    setYoutubeUrl(url);
+    if (url && !isValidYouTubeUrl(url)) {
+      setUrlError('Please enter a valid YouTube URL');
+    } else {
+      setUrlError('');
     }
   };
 
   const handleSave = async () => {
-    if (!selectedFile || !title.trim()) {
-      alert('Please provide both a video file and a title');
+    if (!youtubeUrl.trim() || !title.trim()) {
+      alert('Please provide both a YouTube URL and a title');
+      return;
+    }
+
+    if (!isValidYouTubeUrl(youtubeUrl)) {
+      alert('Please enter a valid YouTube URL');
       return;
     }
 
     setIsUploading(true);
 
     try {
+      const youtubeId = extractYouTubeId(youtubeUrl);
+      if (!youtubeId) {
+        throw new Error('Could not extract YouTube ID');
+      }
+
       const newVideo: Video = {
         id: Date.now().toString(),
         title: title.trim(),
         category,
-        fileName: selectedFile.name,
+        youtubeUrl: youtubeUrl.trim(),
+        youtubeId,
         uploadedAt: new Date().toISOString()
       };
 
-      await saveVideoFile(`video_${newVideo.id}`, selectedFile);
       saveVideo(newVideo);
       onVideoAdded(newVideo);
 
       setTitle('');
-      setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setYoutubeUrl('');
+      setUrlError('');
       setIsUploading(false);
 
-      alert('Video uploaded successfully!');
+      alert('Video saved successfully!');
     } catch (error) {
-      console.error('Error uploading video:', error);
-      alert('Failed to upload video. Please try again.');
+      console.error('Error saving video:', error);
+      alert('Failed to save video. Please try again.');
       setIsUploading(false);
     }
   };
@@ -68,20 +80,23 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
 
       <div className="upload-form">
         <div className="form-group">
-          <label htmlFor="video-file">Video File</label>
-          <div className="file-input-wrapper">
-            <input
-              ref={fileInputRef}
-              type="file"
-              id="video-file"
-              accept="video/*"
-              onChange={handleFileSelect}
-              className="file-input"
-            />
-            <label htmlFor="video-file" className="file-input-label">
-              <Upload size={20} />
-              <span>{selectedFile ? selectedFile.name : 'Choose video file'}</span>
-            </label>
+          <label htmlFor="youtube-url">YouTube Video URL</label>
+          <div className="url-input-wrapper">
+            <div className="input-with-icon">
+              <Youtube className="input-icon" size={20} />
+              <input
+                type="text"
+                id="youtube-url"
+                value={youtubeUrl}
+                onChange={(e) => handleYouTubeUrlChange(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className={`text-input url-input ${urlError ? 'error' : ''}`}
+              />
+            </div>
+            {urlError && <div className="error-message">{urlError}</div>}
+            <div className="url-help">
+              Paste your unlisted YouTube video URL here
+            </div>
           </div>
         </div>
 
@@ -113,11 +128,11 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
 
         <button
           onClick={handleSave}
-          disabled={!selectedFile || !title.trim() || isUploading}
+          disabled={!youtubeUrl.trim() || !title.trim() || isUploading || !!urlError}
           className="save-btn"
         >
           <Save size={20} />
-          {isUploading ? 'Uploading...' : 'Save Video'}
+          {isUploading ? 'Saving...' : 'Save Video'}
         </button>
       </div>
     </div>

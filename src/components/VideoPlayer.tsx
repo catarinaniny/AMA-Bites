@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { X, Download } from 'lucide-react';
+import React from 'react';
+import { X, ExternalLink } from 'lucide-react';
 import { Video } from '../types/Video';
-import { getVideoFile } from '../utils/videoStorage';
 
 interface VideoPlayerProps {
   video: Video;
@@ -9,38 +8,10 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
-  const [videoUrl, setVideoUrl] = useState<string>('');
+  const embedUrl = `https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1`;
 
-  useEffect(() => {
-    const loadVideo = async () => {
-      try {
-        const url = await getVideoFile(`video_${video.id}`);
-        if (url) {
-          setVideoUrl(url);
-        }
-      } catch (error) {
-        console.error('Error loading video:', error);
-      }
-    };
-
-    loadVideo();
-  }, [video.id]);
-
-  useEffect(() => {
-    return () => {
-      if (videoUrl) {
-        URL.revokeObjectURL(videoUrl);
-      }
-    };
-  }, [videoUrl]);
-
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.download = video.fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleOpenInYouTube = () => {
+    window.open(video.youtubeUrl, '_blank');
   };
 
   return (
@@ -53,8 +24,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
           </div>
 
           <div className="player-controls">
-            <button onClick={handleDownload} className="control-btn" title="Download">
-              <Download size={20} />
+            <button onClick={handleOpenInYouTube} className="control-btn" title="Open in YouTube">
+              <ExternalLink size={20} />
             </button>
             <button onClick={onClose} className="control-btn close" title="Close">
               <X size={24} />
@@ -63,20 +34,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
         </div>
 
         <div className="video-wrapper">
-          {videoUrl ? (
-            <video
-              controls
-              autoPlay
-              className="video-element"
-              src={videoUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <div className="video-error">
-              Video not found. Please try re-uploading.
-            </div>
-          )}
+          <iframe
+            className="youtube-embed"
+            src={embedUrl}
+            title={video.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
       </div>
     </div>
