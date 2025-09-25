@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Upload, Video as VideoIcon, Library, Settings } from 'lucide-react';
+import { Upload, Video as VideoIcon, Settings } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
 import { getVideos } from '../utils/storage';
 import { AdminUpload } from './AdminUpload';
@@ -7,6 +7,7 @@ import { VideoCard } from './VideoCard';
 import { CategoryFilter } from './CategoryFilter';
 import { SearchBar } from './SearchBar';
 import { VideoPlayer } from './VideoPlayer';
+import logoOrange from '../logo-orange.png';
 
 export const AdminView: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -56,8 +57,8 @@ export const AdminView: React.FC = () => {
       <header className="app-header">
         <div className="header-content">
           <h1 className="app-title">
-            <Library size={32} />
-            Video Knowledge Base
+            <img src={logoOrange} alt="AMA Bites Logo" style={{ width: 45, height: 30, objectFit: 'contain' }} />
+            AMA Bites
             <span className="admin-badge">
               <Settings size={16} />
               Admin
