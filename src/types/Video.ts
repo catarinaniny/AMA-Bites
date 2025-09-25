@@ -11,6 +11,7 @@ export type VideoCategory =
   | "ACP Framework"
   | "Business Strategy"
   | "Lead Generation"
+  | "Marketing & Growth"
   | "Social Media & Content Creation"
   | "Tech & AI";
 
@@ -18,6 +19,7 @@ export const CATEGORIES: VideoCategory[] = [
   "ACP Framework",
   "Business Strategy",
   "Lead Generation",
+  "Marketing & Growth",
   "Social Media & Content Creation",
   "Tech & AI"
 ];

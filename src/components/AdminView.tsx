@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Upload, Video as VideoIcon, Settings } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
-import { getVideos } from '../utils/storage';
+import { getVideos, deleteVideo } from '../utils/storage';
 import { AdminUpload } from './AdminUpload';
-import { VideoCard } from './VideoCard';
+import { AdminVideoCard } from './AdminVideoCard';
 import { CategoryFilter } from './CategoryFilter';
 import { SearchBar } from './SearchBar';
 import { VideoPlayer } from './VideoPlayer';
@@ -52,6 +52,19 @@ export const AdminView: React.FC = () => {
     setShowUploadModal(false);
   };
 
+  const handleVideoDelete = (video: Video) => {
+    try {
+      deleteVideo(video.id);
+      setVideos(videos.filter(v => v.id !== video.id));
+      if (selectedVideo && selectedVideo.id === video.id) {
+        setSelectedVideo(null);
+      }
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      alert('Failed to delete video. Please try again.');
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -89,10 +102,11 @@ export const AdminView: React.FC = () => {
         {filteredVideos.length > 0 ? (
           <div className="videos-grid">
             {filteredVideos.map(video => (
-              <VideoCard
+              <AdminVideoCard
                 key={video.id}
                 video={video}
                 onClick={setSelectedVideo}
+                onDelete={handleVideoDelete}
               />
             ))}
           </div>
