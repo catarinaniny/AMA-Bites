@@ -377,11 +377,23 @@ body {
   position: relative;
 }
 
-.delete-btn {
+.video-actions {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: rgba(239, 68, 68, 0.9);
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.admin-video-card:hover .video-actions {
+  opacity: 1;
+}
+
+.edit-btn, .delete-btn {
+  background: rgba(0, 0, 0, 0.7);
   border: none;
   color: white;
   border-radius: 50%;
@@ -391,14 +403,22 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  opacity: 0;
-  z-index: 2;
+  transition: all 0.2s ease;
   backdrop-filter: blur(10px);
 }
 
-.admin-video-card:hover .delete-btn {
-  opacity: 1;
+.edit-btn {
+  background: rgba(59, 130, 246, 0.9);
+}
+
+.edit-btn:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.9);
 }
 
 .delete-btn:hover {

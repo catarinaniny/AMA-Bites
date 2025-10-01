@@ -4,6 +4,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc,
   query,
   orderBy,
@@ -46,6 +47,15 @@ const deleteVideoFromLocalStorage = (id: string): void => {
   const videos = getVideosFromLocalStorage();
   const filtered = videos.filter(v => v.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+};
+
+const updateVideoInLocalStorage = (updatedVideo: Video): void => {
+  const videos = getVideosFromLocalStorage();
+  const index = videos.findIndex(v => v.id === updatedVideo.id);
+  if (index !== -1) {
+    videos[index] = updatedVideo;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+  }
 };
 
 // Firebase functions
@@ -100,6 +110,27 @@ export const saveVideo = async (video: Video): Promise<void> => {
     console.error('Error saving video to Firebase:', error);
     console.warn('Falling back to localStorage');
     saveVideoToLocalStorage(video);
+  }
+};
+
+export const updateVideo = async (updatedVideo: Video): Promise<void> => {
+  if (!isFirebaseConfigured()) {
+    console.warn('Firebase not configured, using localStorage');
+    updateVideoInLocalStorage(updatedVideo);
+    return;
+  }
+
+  try {
+    // Update in Firebase
+    const { id, ...videoData } = updatedVideo;
+    await updateDoc(doc(db, COLLECTION_NAME, id), videoData);
+
+    // Also update in localStorage
+    updateVideoInLocalStorage(updatedVideo);
+  } catch (error) {
+    console.error('Error updating video in Firebase:', error);
+    console.warn('Falling back to localStorage');
+    updateVideoInLocalStorage(updatedVideo);
   }
 };
 

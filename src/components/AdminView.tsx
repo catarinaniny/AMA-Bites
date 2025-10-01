@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Upload, Video as VideoIcon, Settings } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
-import { subscribeToVideos, deleteVideo } from '../utils/storage';
+import { subscribeToVideos, deleteVideo, updateVideo } from '../utils/storage';
 import { AdminUpload } from './AdminUpload';
 import { AdminVideoCard } from './AdminVideoCard';
+import { EditVideo } from './EditVideo';
 import { FilterSidebar } from './FilterSidebar';
 import { SearchBar } from './SearchBar';
 import { VideoPlayer } from './VideoPlayer';
@@ -15,6 +16,8 @@ export const AdminView: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
@@ -91,6 +94,23 @@ export const AdminView: React.FC = () => {
     setShowUploadModal(false);
   };
 
+  const handleVideoEdit = (video: Video) => {
+    setEditingVideo(video);
+    setShowEditModal(true);
+  };
+
+  const handleVideoUpdated = async (updatedVideo: Video) => {
+    try {
+      await updateVideo(updatedVideo);
+      // Firebase subscription will automatically update the list
+      setShowEditModal(false);
+      setEditingVideo(null);
+    } catch (error) {
+      console.error('Error updating video:', error);
+      alert('Failed to update video. Please try again.');
+    }
+  };
+
   const handleVideoDelete = async (video: Video) => {
     try {
       await deleteVideo(video.id);
@@ -161,6 +181,7 @@ export const AdminView: React.FC = () => {
                   key={video.id}
                   video={video}
                   onClick={setSelectedVideo}
+                  onEdit={handleVideoEdit}
                   onDelete={handleVideoDelete}
                 />
               ))}
@@ -185,6 +206,17 @@ export const AdminView: React.FC = () => {
           <AdminUpload
             onVideoAdded={handleVideoAdded}
             onClose={() => setShowUploadModal(false)}
+          />
+        </>
+      )}
+
+      {showEditModal && editingVideo && (
+        <>
+          <div className="overlay" onClick={() => setShowEditModal(false)} />
+          <EditVideo
+            video={editingVideo}
+            onVideoUpdated={handleVideoUpdated}
+            onClose={() => setShowEditModal(false)}
           />
         </>
       )}
