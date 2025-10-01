@@ -532,24 +532,14 @@ body {
   font-weight: 500;
 }
 
-.video-dates {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.video-session-date {
+.video-date {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   color: #ffffff;
   font-size: 0.85rem;
   font-weight: 500;
-}
-
-.video-upload-date {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .upload-form {

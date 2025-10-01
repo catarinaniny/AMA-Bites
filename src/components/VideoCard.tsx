@@ -9,15 +9,6 @@ interface VideoCardProps {
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
   const thumbnailUrl = getYouTubeThumbnail(video.youtubeId, 'high');
 
   return (
@@ -41,14 +32,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
             ))}
           </div>
 
-          <div className="video-dates">
-            <span className="video-session-date">
-              <Calendar size={14} />
-              {video.date}
-            </span>
-            <span className="video-upload-date">
-              Uploaded: {formatDate(video.uploadedAt)}
-            </span>
+          <div className="video-date">
+            <Calendar size={14} />
+            {video.date}
           </div>
         </div>
       </div>

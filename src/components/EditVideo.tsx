@@ -22,6 +22,7 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
     );
   };
 
+
   const handleSave = async () => {
     if (!title.trim()) {
       alert('Please provide a title');
@@ -92,9 +93,16 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
                 <input
                   type="checkbox"
                   checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryToggle(category)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleCategoryToggle(category);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
                 />
-                <label>{category}</label>
+                <label onClick={(e) => {
+                  e.stopPropagation();
+                  handleCategoryToggle(category);
+                }}>{category}</label>
               </div>
             ))}
           </div>
