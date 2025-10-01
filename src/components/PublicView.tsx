@@ -3,14 +3,15 @@ import { Video as VideoIcon } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
 import { subscribeToVideos } from '../utils/storage';
 import { VideoCard } from './VideoCard';
-import { CategoryFilter } from './CategoryFilter';
+import { FilterSidebar } from './FilterSidebar';
 import { SearchBar } from './SearchBar';
 import { VideoPlayer } from './VideoPlayer';
 import logoOrange from '../logo-orange.png';
 
 export const PublicView: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<VideoCategory | 'All'>('All');
+  const [selectedCategories, setSelectedCategories] = useState<VideoCategory[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
@@ -24,32 +25,55 @@ export const PublicView: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const videoCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
+  const { categoryCounts, dateCounts, availableDates } = useMemo(() => {
+    const categoryCounts: Record<string, number> = {};
+    const dateCounts: Record<string, number> = {};
+    const dateSet = new Set<string>();
+
     videos.forEach(video => {
-      counts[video.category] = (counts[video.category] || 0) + 1;
+      // Count categories
+      video.categories.forEach(category => {
+        categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+      });
+
+      // Count dates
+      dateCounts[video.date] = (dateCounts[video.date] || 0) + 1;
+      dateSet.add(video.date);
     });
-    return counts;
+
+    const availableDates = Array.from(dateSet).sort();
+    return { categoryCounts, dateCounts, availableDates };
   }, [videos]);
 
   const filteredVideos = useMemo(() => {
     let filtered = videos;
 
-    if (selectedCategory !== 'All') {
-      filtered = filtered.filter(video => video.category === selectedCategory);
+    // Filter by categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(video =>
+        video.categories.some(category => selectedCategories.includes(category))
+      );
     }
 
+    // Filter by date
+    if (selectedDate) {
+      filtered = filtered.filter(video => video.date === selectedDate);
+    }
+
+    // Filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(video =>
-        video.title.toLowerCase().includes(searchLower)
+        video.title.toLowerCase().includes(searchLower) ||
+        video.date.toLowerCase().includes(searchLower) ||
+        video.categories.some(cat => cat.toLowerCase().includes(searchLower))
       );
     }
 
     return filtered.sort((a, b) =>
       new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
     );
-  }, [videos, selectedCategory, searchTerm]);
+  }, [videos, selectedCategories, selectedDate, searchTerm]);
 
   return (
     <div className="app">
@@ -62,40 +86,57 @@ export const PublicView: React.FC = () => {
         </div>
       </header>
 
-      <main className="main-content">
-        <SearchBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+      <div className="main-layout">
+        <FilterSidebar
+          selectedCategories={selectedCategories}
+          selectedDate={selectedDate}
+          availableDates={availableDates}
+          categoryCounts={categoryCounts}
+          dateCounts={dateCounts}
+          onCategoryToggle={(category) => {
+            setSelectedCategories(prev =>
+              prev.includes(category)
+                ? prev.filter(c => c !== category)
+                : [...prev, category]
+            );
+          }}
+          onDateChange={setSelectedDate}
+          onClearFilters={() => {
+            setSelectedCategories([]);
+            setSelectedDate('');
+            setSearchTerm('');
+          }}
         />
 
-        <CategoryFilter
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          videoCounts={videoCounts}
-        />
+        <main className="main-content">
+          <SearchBar
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
 
-        {filteredVideos.length > 0 ? (
-          <div className="videos-grid">
-            {filteredVideos.map(video => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                onClick={setSelectedVideo}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <VideoIcon className="empty-icon" size={64} />
-            <h3>No videos found</h3>
-            <p>
-              {searchTerm
-                ? "Try adjusting your search terms"
-                : "No videos available at this time"}
-            </p>
-          </div>
-        )}
-      </main>
+          {filteredVideos.length > 0 ? (
+            <div className="videos-grid">
+              {filteredVideos.map(video => (
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onClick={setSelectedVideo}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <VideoIcon className="empty-icon" size={64} />
+              <h3>No videos found</h3>
+              <p>
+                {searchTerm || selectedCategories.length > 0 || selectedDate
+                  ? "Try adjusting your filters or search terms"
+                  : "No videos available at this time"}
+              </p>
+            </div>
+          )}
+        </main>
+      </div>
 
       {selectedVideo && (
         <VideoPlayer

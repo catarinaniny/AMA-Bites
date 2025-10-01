@@ -1,7 +1,8 @@
 export interface Video {
   id: string;
   title: string;
-  category: VideoCategory;
+  categories: VideoCategory[];
+  date: string;
   youtubeUrl: string;
   youtubeId: string;
   uploadedAt: string;

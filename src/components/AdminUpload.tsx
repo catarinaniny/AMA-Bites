@@ -11,7 +11,8 @@ interface AdminUploadProps {
 
 export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<VideoCategory>(CATEGORIES[0]);
+  const [selectedCategories, setSelectedCategories] = useState<VideoCategory[]>([]);
+  const [date, setDate] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [urlError, setUrlError] = useState('');
@@ -25,9 +26,17 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
     }
   };
 
+  const handleCategoryToggle = (category: VideoCategory) => {
+    setSelectedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
   const handleSave = async () => {
-    if (!youtubeUrl.trim() || !title.trim()) {
-      alert('Please provide both a YouTube URL and a title');
+    if (!youtubeUrl.trim() || !title.trim() || selectedCategories.length === 0 || !date.trim()) {
+      alert('Please provide YouTube URL, title, at least one category, and date');
       return;
     }
 
@@ -47,7 +56,8 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
       const newVideo: Video = {
         id: Date.now().toString(),
         title: title.trim(),
-        category,
+        categories: selectedCategories,
+        date: date.trim(),
         youtubeUrl: youtubeUrl.trim(),
         youtubeId,
         uploadedAt: new Date().toISOString()
@@ -57,6 +67,8 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
       onVideoAdded(newVideo);
 
       setTitle('');
+      setSelectedCategories([]);
+      setDate('');
       setYoutubeUrl('');
       setUrlError('');
       setIsUploading(false);
@@ -113,22 +125,36 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
         </div>
 
         <div className="form-group">
-          <label htmlFor="category">Category</label>
-          <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value as VideoCategory)}
-            className="select-input"
-          >
+          <label>Categories (select one or more)</label>
+          <div className="categories-grid">
             {CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
+              <label key={cat} className="category-checkbox">
+                <input
+                  type="checkbox"
+                  checked={selectedCategories.includes(cat)}
+                  onChange={() => handleCategoryToggle(cat)}
+                />
+                <span className="checkbox-label">{cat}</span>
+              </label>
             ))}
-          </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="date">Date/Session Name</label>
+          <input
+            type="text"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            placeholder="e.g., September 25th AMA, October Strategy Session"
+            className="text-input"
+          />
         </div>
 
         <button
           onClick={handleSave}
-          disabled={!youtubeUrl.trim() || !title.trim() || isUploading || !!urlError}
+          disabled={!youtubeUrl.trim() || !title.trim() || selectedCategories.length === 0 || !date.trim() || isUploading || !!urlError}
           className="save-btn"
         >
           <Save size={20} />

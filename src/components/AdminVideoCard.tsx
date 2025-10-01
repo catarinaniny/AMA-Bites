@@ -51,15 +51,24 @@ export const AdminVideoCard: React.FC<AdminVideoCardProps> = ({ video, onClick, 
         <h3 className="video-title">{video.title}</h3>
 
         <div className="video-meta">
-          <span className="video-category">
-            <Tag size={14} />
-            {video.category}
-          </span>
+          <div className="video-categories">
+            {video.categories.map(category => (
+              <span key={category} className="video-category">
+                <Tag size={12} />
+                {category}
+              </span>
+            ))}
+          </div>
 
-          <span className="video-date">
-            <Calendar size={14} />
-            {formatDate(video.uploadedAt)}
-          </span>
+          <div className="video-dates">
+            <span className="video-session-date">
+              <Calendar size={14} />
+              {video.date}
+            </span>
+            <span className="video-upload-date">
+              Uploaded: {formatDate(video.uploadedAt)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
