@@ -337,7 +337,7 @@ body {
 }
 
 .video-info {
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem 1rem;
 }
 
 .video-title {
@@ -518,6 +518,7 @@ body {
   align-items: flex-start;
   gap: 1rem;
   margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .video-date {
@@ -534,7 +535,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
 }
 
