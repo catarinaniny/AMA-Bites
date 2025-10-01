@@ -32,22 +32,26 @@ export const AdminView: React.FC = () => {
     const dateCounts: Record<string, number> = {};
     const dateSet = new Set<string>();
 
-    videos.forEach(video => {
+    if (videos && videos.length > 0) {
+      videos.forEach(video => {
       // Count categories
       video.categories.forEach(category => {
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       });
 
-      // Count dates
-      dateCounts[video.date] = (dateCounts[video.date] || 0) + 1;
-      dateSet.add(video.date);
-    });
+        // Count dates
+        dateCounts[video.date] = (dateCounts[video.date] || 0) + 1;
+        dateSet.add(video.date);
+      });
+    }
 
     const availableDates = Array.from(dateSet).sort();
     return { categoryCounts, dateCounts, availableDates };
   }, [videos]);
 
   const filteredVideos = useMemo(() => {
+    if (!videos || videos.length === 0) return [];
+
     let filtered = videos;
 
     // Filter by categories
