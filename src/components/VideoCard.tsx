@@ -23,6 +23,11 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
         <h3 className="video-title">{video.title}</h3>
 
         <div className="video-meta">
+          <div className="video-date">
+            <Calendar size={14} />
+            {video.date}
+          </div>
+
           <div className="video-categories">
             {video.categories && Array.isArray(video.categories) && video.categories.map(category => (
               <span key={category} className="video-category">
@@ -30,11 +35,6 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
                 {category}
               </span>
             ))}
-          </div>
-
-          <div className="video-date">
-            <Calendar size={14} />
-            {video.date}
           </div>
         </div>
       </div>

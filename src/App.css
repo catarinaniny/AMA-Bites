@@ -512,11 +512,30 @@ body {
   flex: 1;
 }
 
+.video-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.video-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .video-categories {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .video-category {
@@ -530,16 +549,6 @@ body {
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 500;
-}
-
-.video-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
 }
 
 .upload-form {
