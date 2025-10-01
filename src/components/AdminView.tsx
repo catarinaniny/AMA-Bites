@@ -34,10 +34,12 @@ export const AdminView: React.FC = () => {
 
     if (videos && videos.length > 0) {
       videos.forEach(video => {
-      // Count categories
-      video.categories.forEach(category => {
-        categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-      });
+        // Count categories
+        if (video.categories && Array.isArray(video.categories)) {
+          video.categories.forEach(category => {
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+          });
+        }
 
         // Count dates
         dateCounts[video.date] = (dateCounts[video.date] || 0) + 1;
@@ -57,6 +59,7 @@ export const AdminView: React.FC = () => {
     // Filter by categories
     if (selectedCategories.length > 0) {
       filtered = filtered.filter(video =>
+        video.categories && Array.isArray(video.categories) &&
         video.categories.some(category => selectedCategories.includes(category))
       );
     }
@@ -72,7 +75,8 @@ export const AdminView: React.FC = () => {
       filtered = filtered.filter(video =>
         video.title.toLowerCase().includes(searchLower) ||
         video.date.toLowerCase().includes(searchLower) ||
-        video.categories.some(cat => cat.toLowerCase().includes(searchLower))
+        (video.categories && Array.isArray(video.categories) &&
+         video.categories.some(cat => cat.toLowerCase().includes(searchLower)))
       );
     }
 
