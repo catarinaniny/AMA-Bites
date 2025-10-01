@@ -9,9 +9,9 @@ interface EditVideoProps {
 }
 
 export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onClose }) => {
-  const [title, setTitle] = useState(video.title);
+  const [title, setTitle] = useState(video.title || '');
   const [selectedCategories, setSelectedCategories] = useState<VideoCategory[]>(video.categories || []);
-  const [date, setDate] = useState(video.date);
+  const [date, setDate] = useState(video.date || '');
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleCategoryToggle = (category: VideoCategory) => {
@@ -24,7 +24,7 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
 
 
   const handleSave = async () => {
-    if (!title.trim()) {
+    if (!title || !title.trim()) {
       alert('Please provide a title');
       return;
     }
@@ -34,7 +34,7 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
       return;
     }
 
-    if (!date.trim()) {
+    if (!date || !date.trim()) {
       alert('Please provide a date');
       return;
     }
@@ -44,9 +44,9 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
     try {
       const updatedVideo: Video = {
         ...video,
-        title: title.trim(),
+        title: (title || '').trim(),
         categories: selectedCategories,
-        date: date.trim()
+        date: (date || '').trim()
       };
 
       onVideoUpdated(updatedVideo);
@@ -122,7 +122,7 @@ export const EditVideo: React.FC<EditVideoProps> = ({ video, onVideoUpdated, onC
 
         <button
           onClick={handleSave}
-          disabled={!title.trim() || selectedCategories.length === 0 || !date.trim() || isUpdating}
+          disabled={!title || !title.trim() || selectedCategories.length === 0 || !date || !date.trim() || isUpdating}
           className="save-btn"
         >
           <Save size={20} />
