@@ -21,7 +21,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onClose }) => {
           <div className="player-info">
             <h2 className="player-title">{video.title}</h2>
             <div className="player-categories">
-              {video.categories.map(category => (
+              {video.categories && Array.isArray(video.categories) && video.categories.map(category => (
                 <span key={category} className="player-category">{category}</span>
               ))}
             </div>

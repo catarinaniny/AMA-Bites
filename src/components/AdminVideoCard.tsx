@@ -52,7 +52,7 @@ export const AdminVideoCard: React.FC<AdminVideoCardProps> = ({ video, onClick, 
 
         <div className="video-meta">
           <div className="video-categories">
-            {video.categories.map(category => (
+            {video.categories && Array.isArray(video.categories) && video.categories.map(category => (
               <span key={category} className="video-category">
                 <Tag size={12} />
                 {category}
