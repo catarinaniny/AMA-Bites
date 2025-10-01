@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Video as VideoIcon } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
-import { getVideos } from '../utils/storage';
+import { subscribeToVideos } from '../utils/storage';
 import { VideoCard } from './VideoCard';
 import { CategoryFilter } from './CategoryFilter';
 import { SearchBar } from './SearchBar';
@@ -15,7 +15,13 @@ export const PublicView: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
-    setVideos(getVideos());
+    // Subscribe to real-time updates from Firebase
+    const unsubscribe = subscribeToVideos((updatedVideos) => {
+      setVideos(updatedVideos);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   const videoCounts = useMemo(() => {

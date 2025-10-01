@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Upload, Video as VideoIcon, Settings } from 'lucide-react';
 import { Video, VideoCategory } from '../types/Video';
-import { getVideos, deleteVideo } from '../utils/storage';
+import { subscribeToVideos, deleteVideo } from '../utils/storage';
 import { AdminUpload } from './AdminUpload';
 import { AdminVideoCard } from './AdminVideoCard';
 import { CategoryFilter } from './CategoryFilter';
@@ -17,7 +17,13 @@ export const AdminView: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
-    setVideos(getVideos());
+    // Subscribe to real-time updates from Firebase
+    const unsubscribe = subscribeToVideos((updatedVideos) => {
+      setVideos(updatedVideos);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   const videoCounts = useMemo(() => {
@@ -48,14 +54,15 @@ export const AdminView: React.FC = () => {
   }, [videos, selectedCategory, searchTerm]);
 
   const handleVideoAdded = (video: Video) => {
-    setVideos([...videos, video]);
+    // Firebase will trigger the subscription update automatically
+    // No need to manually update state
     setShowUploadModal(false);
   };
 
-  const handleVideoDelete = (video: Video) => {
+  const handleVideoDelete = async (video: Video) => {
     try {
-      deleteVideo(video.id);
-      setVideos(videos.filter(v => v.id !== video.id));
+      await deleteVideo(video.id);
+      // Firebase subscription will automatically update the list
       if (selectedVideo && selectedVideo.id === video.id) {
         setSelectedVideo(null);
       }

@@ -53,7 +53,7 @@ export const AdminUpload: React.FC<AdminUploadProps> = ({ onVideoAdded, onClose 
         uploadedAt: new Date().toISOString()
       };
 
-      saveVideo(newVideo);
+      await saveVideo(newVideo);
       onVideoAdded(newVideo);
 
       setTitle('');
