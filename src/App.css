@@ -291,6 +291,9 @@ body {
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(255, 87, 34, 0.1);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .video-card:hover {
@@ -337,7 +340,12 @@ body {
 }
 
 .video-info {
-  padding: 1rem 1rem 1.5rem 1rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  min-height: 120px;
 }
 
 .video-title {
@@ -348,30 +356,9 @@ body {
   line-height: 1.4;
 }
 
-.video-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+/* Removed duplicate .video-meta - see line 515 for the actual styles */
 
-.video-category,
-.video-date {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.video-category {
-  background: rgba(255, 87, 34, 0.2);
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  color: #ff7c4c;
-  font-weight: 500;
-}
+/* Removed duplicate .video-category - consolidated at line 537 */
 
 .admin-video-card {
   position: relative;
@@ -513,12 +500,12 @@ body {
 }
 
 .video-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-top: 0.75rem;
-  margin-bottom: 0.75rem;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  gap: 1rem !important;
+  margin-top: auto !important;
+  padding-top: 1rem !important;
 }
 
 .video-date {
@@ -529,6 +516,7 @@ body {
   font-size: 0.85rem;
   font-weight: 500;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .video-categories {
@@ -536,7 +524,9 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-end;
+  align-content: flex-end;
+  max-width: 60%;
 }
 
 .video-category {
@@ -544,7 +534,11 @@ body {
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.5rem;
-  background: rgba(255, 87, 34, 0.1);
+  background: rgba(255, 87, 34, 0.2);
+  border-radius: 6px;
+  color: #ff7c4c;
+  font-weight: 500;
+  font-size: 0.75rem;
   color: #FF5722;
   border: 1px solid rgba(255, 87, 34, 0.3);
   border-radius: 6px;
